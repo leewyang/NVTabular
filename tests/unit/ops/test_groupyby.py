@@ -44,6 +44,7 @@ def test_groupby_op(keys, cpu, ascending):
             "x": np.arange(size),
             "y": np.linspace(0.0, 10.0, num=size),
             "z": np.linspace(0.0, 10.0, num=size).astype(np.float32),
+            "i": np.random.randint(0, 10, size=size).astype(np.int8),
             "shuffle": np.random.uniform(low=0.0, high=10.0, size=size),
         }
     )
@@ -59,9 +60,10 @@ def test_groupby_op(keys, cpu, ascending):
         groupby_cols=keys,
         sort_cols=["ts"],
         aggs={
-            "x": ["list", "sum", "first", "last"],
-            "y": ["first", "last", "mean"],
-            "z": ["std"],
+            "x": ["list", "sum", "first", "last", "nunique"],
+            "y": ["first", "last", "mean", "std", "var"],
+            "z": ["sum", "mean", "std", "var", "median", "nunique"],
+            "i": ["sum", "mean", "std", "var", "median", "nunique"],
             "ts": ["min"],
         },
         name_sep="-",

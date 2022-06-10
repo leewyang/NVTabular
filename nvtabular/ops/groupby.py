@@ -186,7 +186,14 @@ class Groupby(Operator):
         dtype = col_schema.dtype
         is_list = col_schema.is_list
 
-        dtypes = {"count": numpy.int32, "mean": numpy.float32}
+        dtypes = {
+            "count": numpy.int32,
+            "nunique": numpy.int32,
+            "mean": numpy.float32,
+            "var": numpy.float32,
+            "std": numpy.float32,
+            "median": numpy.float32,
+        }
 
         is_lists = {"list": True}
 
@@ -239,7 +246,7 @@ def _apply_aggs(_df, groupby_cols, _list_aggs, _conv_aggs, name_sep="_", ascendi
     for col in df.columns:
         if re.search(f"{name_sep}(count|nunique)", col):
             df[col] = df[col].astype(numpy.int32)
-        elif re.search(f"{name_sep}(mean|std|var|quantile|median)", col):
+        elif re.search(f"{name_sep}(mean|median|std|var)", col):
             df[col] = df[col].astype(numpy.float32)
 
     return df
