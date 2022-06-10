@@ -12,9 +12,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import re
+
 import numpy
 from dask.dataframe.utils import meta_nonempty
-import re
 
 from merlin.core.dispatch import DataFrameType, annotate
 from merlin.schema import Schema
