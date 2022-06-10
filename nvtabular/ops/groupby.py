@@ -14,6 +14,7 @@
 # limitations under the License.
 import numpy
 from dask.dataframe.utils import meta_nonempty
+import re
 
 from merlin.core.dispatch import DataFrameType, annotate
 from merlin.schema import Schema
@@ -235,9 +236,9 @@ def _apply_aggs(_df, groupby_cols, _list_aggs, _conv_aggs, name_sep="_", ascendi
             df.drop(columns=[col + f"{name_sep}list"], inplace=True)
 
     for col in df.columns:
-        if col.endswith(f"{name_sep}count"):
+        if re.search(f"{name_sep}(count|nunique)", col):
             df[col] = df[col].astype(numpy.int32)
-        elif col.endswith(f"{name_sep}mean"):
+        elif re.search(f"{name_sep}(mean|std|var|quantile|median)", col):
             df[col] = df[col].astype(numpy.float32)
 
     return df

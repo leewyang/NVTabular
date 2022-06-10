@@ -43,6 +43,7 @@ def test_groupby_op(keys, cpu, ascending):
             "ts": np.linspace(0.0, 10.0, num=size),
             "x": np.arange(size),
             "y": np.linspace(0.0, 10.0, num=size),
+            "z": np.linspace(0.0, 10.0, num=size).astype(np.float32),
             "shuffle": np.random.uniform(low=0.0, high=10.0, size=size),
         }
     )
@@ -54,12 +55,13 @@ def test_groupby_op(keys, cpu, ascending):
 
     dataset.schema.column_schemas["x"] = dataset.schema.column_schemas["x"].with_tags("custom_tag")
     # Define Groupby Workflow
-    groupby_features = ColumnSelector(["name", "id", "ts", "x", "y"]) >> ops.Groupby(
+    groupby_features = ColumnSelector(["name", "id", "ts", "x", "y", "z"]) >> ops.Groupby(
         groupby_cols=keys,
         sort_cols=["ts"],
         aggs={
             "x": ["list", "sum", "first", "last"],
-            "y": ["first", "last"],
+            "y": ["first", "last", "mean"],
+            "z": ["std"],
             "ts": ["min"],
         },
         name_sep="-",
@@ -96,7 +98,7 @@ def test_groupby_op(keys, cpu, ascending):
     x = x.to_pandas() if hasattr(x, "to_pandas") else x
     assert list(x) == sums
 
-    # Check basic behavior or "y" column
+    # Check basic behavior of "y" column
     assert (new_gdf["y-first"] < new_gdf["y-last"]).all()
 
     for i in range(len(new_gdf)):
