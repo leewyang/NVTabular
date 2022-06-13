@@ -62,7 +62,7 @@ def test_groupby_op(keys, cpu, ascending):
         aggs={
             "x": ["list", "sum", "first", "last", "nunique"],
             "y": ["first", "last", "mean", "std", "var"],
-            "z": ["sum", "mean", "std", "var", "median", "nunique"],
+            "z": ["list", "mean", "std", "var", "median", "nunique"],
             "i": ["sum", "mean", "std", "var", "median", "nunique"],
             "ts": ["min"],
         },
@@ -99,6 +99,21 @@ def test_groupby_op(keys, cpu, ascending):
     x = new_gdf["x-sum"]
     x = x.to_pandas() if hasattr(x, "to_pandas") else x
     assert list(x) == sums
+
+    # Check that list mean and nunique match mean and nunique aggregation
+    z = new_gdf["z-list"]
+    z = z.to_pandas() if hasattr(z, "to_pandas") else z
+    means = []
+    nuniques = []
+    for el in z.values:
+        _el = pd.Series(el)
+        means.append(_el.mean())
+        nuniques.append(_el.nunique())
+    z_means, z_nuniques = new_gdf["z-mean"], new_gdf["z-mean"]
+    z_means = z_means.to_pandas() if hasattr(z_means, "to_pandas") else z_means
+    z_nuniques = z_nuniques.to_pandas() if hasattr(z_nuniques, "to_pandas") else z_nuniques
+    assert np.allclose(z_means, means)
+    assert np.allclose(z_nuniques, nuniques)
 
     # Check basic behavior of "y" column
     assert (new_gdf["y-first"] < new_gdf["y-last"]).all()
