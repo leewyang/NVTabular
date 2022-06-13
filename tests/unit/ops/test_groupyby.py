@@ -109,7 +109,7 @@ def test_groupby_op(keys, cpu, ascending):
         _el = pd.Series(el)
         means.append(_el.mean())
         nuniques.append(_el.nunique())
-    z_means, z_nuniques = new_gdf["z-mean"], new_gdf["z-mean"]
+    z_means, z_nuniques = new_gdf["z-mean"], new_gdf["z-nunique"]
     z_means = z_means.to_pandas() if hasattr(z_means, "to_pandas") else z_means
     z_nuniques = z_nuniques.to_pandas() if hasattr(z_nuniques, "to_pandas") else z_nuniques
     assert np.allclose(z_means, means)
